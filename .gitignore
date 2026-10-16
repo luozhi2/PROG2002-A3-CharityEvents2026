@@ -1,0 +1,20 @@
+# ---------------------------------------------------------------------------
+# API ignore rules
+# ---------------------------------------------------------------------------
+
+node_modules/
+
+# Real credentials must never be committed - .env.example is the template
+.env
+.env.local
+
+# Logs
+*.log
+
+# Built Angular websites copied here for deployment; they are generated from
+# the two applications in angular/ and should not be version controlled.
+public/client/
+public/admin/
+
+# Keep the folder itself in the repository
+!public/.gitkeep
