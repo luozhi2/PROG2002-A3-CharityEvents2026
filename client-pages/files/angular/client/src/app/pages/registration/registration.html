@@ -1,0 +1,282 @@
+<div class="container page">
+  <!-- ===================== CONFIRMATION ===================== -->
+  @if (submitted() && confirmation(); as registration) {
+    <div class="confirmation" role="status">
+      <div class="confirmation__check" aria-hidden="true">✓</div>
+      <h1>Registration confirmed</h1>
+      <p class="confirmation__lead">
+        Thank you, {{ registration.full_name }}. Your tickets are booked — a confirmation has
+        been recorded against this event.
+      </p>
+
+      <div class="confirmation__grid">
+        <div class="confirmation__item">
+          <span class="confirmation__label">Reference</span>
+          <span class="confirmation__value">#{{ registration.registration_id }}</span>
+        </div>
+        <div class="confirmation__item">
+          <span class="confirmation__label">Tickets</span>
+          <span class="confirmation__value">{{ registration.tickets }}</span>
+        </div>
+        <div class="confirmation__item">
+          <span class="confirmation__label">Email</span>
+          <span class="confirmation__value">{{ registration.email }}</span>
+        </div>
+        <div class="confirmation__item">
+          <span class="confirmation__label">Registered</span>
+          <span class="confirmation__value">{{ formatDateTime(registration.registration_date) }}</span>
+        </div>
+      </div>
+
+      @if (event(); as current) {
+        <div class="confirmation__event">
+          <h2>{{ current.event_name }}</h2>
+          <p class="muted">
+            {{ formatDate(current.event_date) }}
+            @if (formatTime(current.event_date)) { at {{ formatTime(current.event_date) }} }
+            · {{ current.location_name }}
+          </p>
+          <p class="muted">
+            {{ current.tickets_sold }} of {{ current.capacity }} tickets have now been taken
+            ({{ current.registration_count }} registration{{ current.registration_count === 1 ? '' : 's' }}).
+          </p>
+        </div>
+      }
+
+      <div class="confirmation__actions">
+        <button class="button" type="button" (click)="backToEvent()">View the event page</button>
+        <button class="button button--outline" type="button" (click)="registerAnother()">
+          Register another attendee
+        </button>
+        <a class="button button--ghost" routerLink="/search">Browse more events</a>
+      </div>
+    </div>
+  }
+
+  <!-- ===================== FORM ===================== -->
+  @if (!submitted()) {
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/search">Events</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Register</span>
+    </nav>
+
+    <header class="reg-head">
+      <span class="eyebrow">Event registration</span>
+      <h1>Register for your tickets</h1>
+      <p class="reg-head__lead">
+        Confirm the event below, tell us who is coming, and choose how many tickets you need.
+      </p>
+    </header>
+
+    <!-- Loading the selected event -->
+    @if (loadingEvent()) {
+      <div class="loading-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Loading the selected event…</span>
+      </div>
+    }
+
+    <!-- The event could not be loaded: nothing can be registered -->
+    @if (!loadingEvent() && eventError()) {
+      <div class="alert alert--error" role="alert">
+        <span class="alert__icon" aria-hidden="true">⚠️</span>
+        <div class="alert__body">
+          <strong>We cannot start this registration</strong>
+          <p>{{ eventError() }}</p>
+        </div>
+      </div>
+      <a class="button button--ghost" routerLink="/search">Find an event to register for</a>
+    }
+
+    <!-- Registration cannot proceed: the event is sold out or not Active.
+         Checked before the form is rendered, so a visitor who arrives from a
+         direct link is told why instead of facing a form that can never validate. -->
+    @if (!loadingEvent() && event(); as current) {
+      @if (blockedReason(); as reason) {
+        <div class="panel reg-blocked" role="status">
+          <div class="reg-blocked__icon" aria-hidden="true">🎟️</div>
+          <h2>Registration is closed for this event</h2>
+          <p class="reg-blocked__reason">{{ reason }}</p>
+
+          <ul class="reg-blocked__facts">
+            <li><strong>{{ current.event_name }}</strong></li>
+            <li>
+              {{ formatDate(current.event_date) }}
+              @if (formatTime(current.event_date)) { <span class="muted">· {{ formatTime(current.event_date) }}</span> }
+            </li>
+            <li>{{ current.location_name }}</li>
+            <li>
+              {{ current.tickets_sold }} of {{ current.capacity }} tickets taken
+              @if (current.registration_count > 0) {
+                <span class="muted">· {{ current.registration_count }} registration(s)</span>
+              }
+            </li>
+          </ul>
+
+          <div class="reg-blocked__actions">
+            <a class="button" [routerLink]="['/events', current.event_id]">View the event page</a>
+            <a class="button button--outline" routerLink="/search">Find another event</a>
+          </div>
+        </div>
+      }
+    }
+
+    @if (!loadingEvent() && event(); as current) {
+      @if (!blockedReason()) {
+      <div class="reg-layout">
+        <!-- ---------- the selected event (so the user is certain) ---------- -->
+        <aside class="reg-event panel">
+          <h2>You are registering for</h2>
+          <div class="reg-event__thumb">
+            <img src="event-placeholder.svg" [alt]="current.event_name" />
+          </div>
+          <h3>{{ current.event_name }}</h3>
+          <span class="badge badge--{{ current.status.toLowerCase() }}">{{ current.status }}</span>
+          <ul class="reg-event__facts">
+            <li><span aria-hidden="true">📅</span> {{ formatDate(current.event_date) }}
+              @if (formatTime(current.event_date)) { <span class="muted">· {{ formatTime(current.event_date) }}</span> }
+            </li>
+            <li><span aria-hidden="true">📍</span> {{ current.location_name }}</li>
+            <li><span aria-hidden="true">🏷️</span> {{ current.category_name || 'Uncategorised' }}</li>
+            <li><span aria-hidden="true">💰</span> {{ formatPrice(current.ticket_price) }} per ticket</li>
+            <li><span aria-hidden="true">🎟️</span> {{ remaining() }} of {{ current.capacity }} ticket(s) remaining</li>
+          </ul>
+          <a class="reg-event__link" [routerLink]="['/events', current.event_id]">
+            View full event details →
+          </a>
+        </aside>
+
+        <!-- ---------- the form ---------- -->
+        <section class="panel">
+          <h2>Your details</h2>
+
+          <!-- Errors returned by the API (validation or business rules) -->
+          @if (submitError()) {
+            <div class="alert alert--error" role="alert">
+              <span class="alert__icon" aria-hidden="true">⚠️</span>
+              <div class="alert__body">
+                <strong>We could not complete your registration</strong>
+                <p>{{ submitError() }}</p>
+                @if (serverDetails().length) {
+                  <ul>
+                    @for (detail of serverDetails(); track detail) { <li>{{ detail }}</li> }
+                  </ul>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Client-side validation summary, shown after a blocked submit -->
+          @if (validationAttempted() && formInvalid) {
+            <div class="alert alert--warn" role="alert">
+              <span class="alert__icon" aria-hidden="true">📝</span>
+              <div class="alert__body">
+                <strong>Please fix the following before submitting</strong>
+                <ul>
+                  @for (message of validationSummary(); track message) { <li>{{ message }}</li> }
+                </ul>
+              </div>
+            </div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div class="field">
+              <label for="full_name">
+                Full name <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input id="full_name" class="input" type="text" formControlName="full_name"
+                     autocomplete="name"
+                     [class.input--invalid]="showError('full_name')"
+                     [attr.aria-invalid]="showError('full_name')"
+                     aria-describedby="full_name-error" />
+              @if (showError('full_name')) {
+                <span id="full_name-error" class="field-error">{{ errorFor('full_name') }}</span>
+              }
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="email">
+                  Email address <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input id="email" class="input" type="email" formControlName="email"
+                       autocomplete="email" placeholder="name@example.com"
+                       [class.input--invalid]="showError('email')"
+                       [attr.aria-invalid]="showError('email')"
+                       aria-describedby="email-error" />
+                @if (showError('email')) {
+                  <span id="email-error" class="field-error">{{ errorFor('email') }}</span>
+                } @else {
+                  <span class="hint">One registration per email address for each event.</span>
+                }
+              </div>
+
+              <div class="field">
+                <label for="phone">
+                  Phone number <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input id="phone" class="input" type="tel" formControlName="phone"
+                       autocomplete="tel" placeholder="0412 345 678"
+                       [class.input--invalid]="showError('phone')"
+                       [attr.aria-invalid]="showError('phone')"
+                       aria-describedby="phone-error" />
+                @if (showError('phone')) {
+                  <span id="phone-error" class="field-error">{{ errorFor('phone') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="tickets">
+                Number of tickets <span class="required" aria-hidden="true">*</span>
+              </label>
+              <input id="tickets" class="input input--narrow" type="number" formControlName="tickets"
+                     min="1" [attr.max]="remaining()" step="1"
+                     [class.input--invalid]="showError('tickets')"
+                     [attr.aria-invalid]="showError('tickets')"
+                     aria-describedby="tickets-error tickets-hint" />
+              @if (showError('tickets')) {
+                <span id="tickets-error" class="field-error">{{ errorFor('tickets') }}</span>
+              }
+              <span id="tickets-hint" class="hint">
+                Between 1 and {{ remaining() }} ticket(s) available.
+                Estimated total: <strong>{{ formatPrice(estimatedTotal()) }}</strong>
+              </span>
+            </div>
+
+            <div class="field">
+              <label for="notes">Notes for the organiser <span class="muted">(optional)</span></label>
+              <textarea id="notes" class="textarea" formControlName="notes" rows="3"
+                        placeholder="Dietary requirements, accessibility needs, or anything else the organiser should know."
+                        [class.textarea--invalid]="showError('notes')"></textarea>
+              @if (showError('notes')) {
+                <span class="field-error">{{ errorFor('notes') }}</span>
+              }
+            </div>
+
+            <div class="reg-actions">
+              <button class="button button--lg" type="submit" [disabled]="submitting()">
+                @if (submitting()) {
+                  <span class="spinner spinner--sm" aria-hidden="true"></span>
+                  Submitting…
+                } @else {
+                  Finalise registration
+                }
+              </button>
+              <a class="button button--outline" [routerLink]="['/events', current.event_id]">Cancel</a>
+            </div>
+
+            <p class="reg-disclaimer">
+              By finalising this registration you confirm the details above are correct. Fields
+              marked <span class="required">*</span> are required.
+            </p>
+          </form>
+        </section>
+      </div>
+      }
+    }
+  }
+</div>

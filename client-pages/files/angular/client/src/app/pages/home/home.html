@@ -1,0 +1,162 @@
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <span class="eyebrow">Community fundraising</span>
+      <h1>Turn a great day out into real support for local causes</h1>
+      <p class="hero__lead">
+        Browse charity events across the Northern Rivers — fun runs, gala dinners, clean-ups
+        and community appeals — then register in under a minute. Every ticket goes straight
+        to the cause.
+      </p>
+
+      <!-- Quick search: hands the term to the search page -->
+      <form class="hero__search" (ngSubmit)="submitSearch()" role="search">
+        <label class="sr-only" for="hero-search">Search charity events</label>
+        <input id="hero-search" class="input" type="search" name="search"
+               placeholder="Try “fun run”, “Lismore” or “animal”"
+               [(ngModel)]="searchTerm" autocomplete="off" />
+        <button class="button" type="submit">Search events</button>
+      </form>
+
+      <ul class="hero__stats">
+        <li>
+          <strong>{{ upcoming().length }}</strong>
+          <span>upcoming events</span>
+        </li>
+        <li>
+          <strong>{{ ticketsSold() }}</strong>
+          <span>tickets already booked</span>
+        </li>
+        <li>
+          <strong>{{ categories().length }}</strong>
+          <span>causes to support</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="hero__art">
+      <img src="hero.svg" alt="Volunteers joining hands at a community charity event" />
+    </div>
+  </div>
+</section>
+
+<div class="container page">
+  <!-- ===================== ERROR ===================== -->
+  @if (error()) {
+    <div class="alert alert--error" role="alert">
+      <span class="alert__icon" aria-hidden="true">⚠️</span>
+      <div class="alert__body">
+        <strong>We could not load the events</strong>
+        <p>{{ error() }}</p>
+        <p>
+          The API server may not be running. Start it with <code>npm start</code> in the
+          <code>api</code> folder, then reload this page.
+        </p>
+      </div>
+      <button class="button button--outline button--sm" type="button" (click)="loadUpcomingEvents()">
+        Try again
+      </button>
+    </div>
+  }
+
+  <!-- ===================== CATEGORIES ===================== -->
+  @if (categories().length) {
+    <section class="section">
+      <div class="section__head">
+        <div>
+          <span class="eyebrow">Browse by cause</span>
+          <h2>Which cause matters to you?</h2>
+        </div>
+        <a class="button button--outline button--sm" routerLink="/search">See all events</a>
+      </div>
+
+      <ul class="category-grid">
+        @for (category of categories(); track category.category_id) {
+          <li>
+            <button class="category-tile" type="button" (click)="browseCategory(category)">
+              <span class="category-tile__icon" aria-hidden="true">{{ categoryIcon(category.category_name) }}</span>
+              <span class="category-tile__name">{{ category.category_name }}</span>
+              <span class="category-tile__count">
+                {{ category.event_count }} event{{ category.event_count === 1 ? '' : 's' }}
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- ===================== UPCOMING EVENTS ===================== -->
+  <section class="section">
+    <div class="section__head">
+      <div>
+        <span class="eyebrow">Coming up</span>
+        <h2>Next events</h2>
+        <p>The soonest Active events across every category, fetched live from the API.</p>
+      </div>
+      <a class="button button--ghost button--sm" routerLink="/search">Find an event</a>
+    </div>
+
+    <!-- Loading state -->
+    @if (loading()) {
+      <div class="loading-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Loading events…</span>
+      </div>
+    }
+
+    <!-- Results -->
+    @if (!loading() && upcoming().length) {
+      <div class="card-grid">
+        @for (event of upcoming(); track event.event_id; let first = $first) {
+          <app-event-card [event]="event" [featured]="first" />
+        }
+      </div>
+    }
+
+    <!-- Empty state -->
+    @if (!loading() && !upcoming().length && !error()) {
+      <div class="empty-state">
+        <div class="empty-state__icon" aria-hidden="true">🗓️</div>
+        <h3>No upcoming events right now</h3>
+        <p>New charity events are added regularly. Please check back soon.</p>
+        <a class="button" routerLink="/search">Browse all events</a>
+      </div>
+    }
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="section">
+    <div class="section__head">
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2>From browsing to booked in three steps</h2>
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li class="step">
+        <span class="step__num">1</span>
+        <h3>Find your event</h3>
+        <p>Search by name, location or cause and filter the list until you find the right fit.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">2</span>
+        <h3>Check the details</h3>
+        <p>
+          Every event page shows the venue, remaining capacity, the latest registrations and
+          a seven-day weather forecast for the location.
+        </p>
+      </li>
+      <li class="step">
+        <span class="step__num">3</span>
+        <h3>Register your tickets</h3>
+        <p>
+          Choose how many tickets you need, submit the form and get an instant confirmation
+          reference.
+        </p>
+      </li>
+    </ol>
+  </section>
+</div>

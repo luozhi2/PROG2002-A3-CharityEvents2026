@@ -1,0 +1,65 @@
+/* Search page: sticky filter toolbar, result count and the event grid. */
+
+.page-head {
+  background: linear-gradient(135deg, var(--brand-800), var(--brand-600));
+  color: #d9f2ef;
+  padding-block: 2.25rem 2.5rem;
+}
+
+.page-head h1 { color: #fff; margin-bottom: 0.35rem; }
+.page-head .eyebrow { color: var(--brand-200); }
+
+.page-head__lead {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 0.98rem;
+}
+
+/* --- filter toolbar ------------------------------------------------------- */
+.filters {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.4rem 1rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 4.6rem;
+  z-index: 20;
+}
+
+.filters__row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 0 1.15rem;
+}
+
+.filters .field { margin-bottom: 0.75rem; }
+
+.filters__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* --- result count --------------------------------------------------------- */
+.result-count {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.result-count strong {
+  color: var(--text-strong);
+  font-size: 1.05rem;
+}
+
+/* --- responsive ----------------------------------------------------------- */
+@media (max-width: 1000px) {
+  .filters { position: static; }
+  .filters__row { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .filters__row { grid-template-columns: 1fr; }
+}

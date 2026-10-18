@@ -1,0 +1,327 @@
+/* Event detail page: breadcrumb, fact grid, weather card, registration table,
+   and the booking sidebar. */
+
+/* --- breadcrumb ----------------------------------------------------------- */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.breadcrumb a { text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span[aria-current] { color: var(--text-strong); font-weight: 600; }
+
+/* --- header --------------------------------------------------------------- */
+.event-head {
+  margin-bottom: 1.75rem;
+}
+
+.event-head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.event-head__countdown {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-700);
+}
+
+.event-head h1 { margin-bottom: 0.4rem; }
+
+.event-head__location {
+  margin: 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* --- layout --------------------------------------------------------------- */
+.event-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.event-main {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.event-side {
+  display: grid;
+  gap: 1.25rem;
+  position: sticky;
+  top: 5.25rem;
+}
+
+.event-hero {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: linear-gradient(135deg, var(--brand-700), var(--brand-500));
+}
+
+.event-hero img { width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
+
+.event-description {
+  white-space: pre-line;
+  color: var(--text-body);
+}
+
+/* --- fact grid ------------------------------------------------------------ */
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.fact { margin: 0; }
+
+.fact dt {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 0.2rem;
+}
+
+.fact dd {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 0.95rem;
+}
+
+/* --- weather -------------------------------------------------------------- */
+.weather .panel__head h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-today {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--brand-50), #fff);
+  border: 1px solid var(--brand-200);
+  margin-bottom: 1.25rem;
+}
+
+.weather-today__icon { font-size: 2rem; }
+
+.weather-today__label {
+  margin: 0;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-700);
+  font-weight: 700;
+}
+
+.weather-today__desc {
+  margin: 0.1rem 0 0;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.weather-today__temp {
+  margin-left: auto;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--brand-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.weather-day {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  text-align: center;
+}
+
+.weather-day__name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-strong);
+}
+
+.weather-day__date { font-size: 0.74rem; color: var(--text-soft); }
+.weather-day__icon { font-size: 1.5rem; line-height: 1.2; }
+
+.weather-day__temp {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.weather-day__label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+.weather-source {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+/* --- registrations -------------------------------------------------------- */
+.panel__sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.person__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.person__name {
+  display: block;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.person__ref {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--text-soft);
+}
+
+.empty-state--inline {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* --- booking sidebar ------------------------------------------------------ */
+.booking { text-align: center; }
+
+.booking__price {
+  margin: 0;
+  font-size: 1.9rem;
+  color: var(--brand-800);
+}
+
+.booking__unit {
+  margin: 0 0 1.1rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.booking__progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.booking__progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-700));
+}
+
+.booking__capacity {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.booking__capacity strong { color: var(--text-strong); }
+
+.booking__cta { width: 100%; }
+
+.booking__note {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: var(--warn-700);
+}
+
+.booking__facts {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 1.1rem 0 0;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0.55rem;
+  text-align: left;
+  font-size: 0.87rem;
+  color: var(--text-muted);
+}
+
+.booking__facts li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+/* --- impact card ---------------------------------------------------------- */
+.impact h3 { margin-bottom: 0.3rem; }
+
+.impact__value {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--brand-700);
+  line-height: 1.1;
+}
+
+.impact p:last-child { margin: 0.35rem 0 0; font-size: 0.85rem; }
+
+/* --- responsive ----------------------------------------------------------- */
+@media (max-width: 1000px) {
+  .event-layout { grid-template-columns: 1fr; }
+  .event-side { position: static; }
+}

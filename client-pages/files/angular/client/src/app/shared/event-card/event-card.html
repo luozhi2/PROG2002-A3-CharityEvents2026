@@ -1,0 +1,46 @@
+<article class="card" [class.card--featured]="featured">
+  <div class="card__media">
+    <!-- Brand artwork stands in for a per-event photo, which the schema allows
+         through events.image_url but the seed data leaves empty. -->
+    <img src="event-placeholder.svg" [alt]="event.event_name" loading="lazy" />
+    <span class="card__status" [class]="'card__status--' + event.status.toLowerCase()">
+      {{ event.status }}
+    </span>
+    <span class="card__price">{{ formatPrice(event.ticket_price) }}</span>
+  </div>
+
+  <div class="card__body">
+    <span class="card__category">{{ event.category_name || 'Uncategorised' }}</span>
+    <h3 class="card__title">
+      <a [routerLink]="['/events', event.event_id]">{{ event.event_name }}</a>
+    </h3>
+
+    <ul class="card__meta">
+      <li>
+        <span aria-hidden="true">📅</span>
+        {{ formatDate(event.event_date) }}
+        @if (formatTime(event.event_date)) { <span class="muted">· {{ formatTime(event.event_date) }}</span> }
+      </li>
+      <li><span aria-hidden="true">📍</span> {{ event.location_name }}</li>
+      <li>
+        <span aria-hidden="true">🎟️</span>
+        {{ event.tickets_sold }} of {{ event.capacity }} tickets taken
+        @if (event.registration_count > 0) {
+          <span class="muted">· {{ event.registration_count }} registration(s)</span>
+        }
+      </li>
+    </ul>
+
+    <div class="card__progress" role="img"
+         [attr.aria-label]="percentSold(event) + '% of capacity sold'">
+      <span class="card__progress-bar" [style.width.%]="percentSold(event)"></span>
+    </div>
+
+    <div class="card__footer">
+      <span class="card__countdown">{{ countdown(event.event_date) }}</span>
+      <a class="card__cta" [routerLink]="['/events', event.event_id]">
+        View details <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</article>

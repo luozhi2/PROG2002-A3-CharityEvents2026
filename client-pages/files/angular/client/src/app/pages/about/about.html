@@ -1,0 +1,112 @@
+<div class="container page">
+  <header class="about-head">
+    <span class="eyebrow">About this project</span>
+    <h1>How the Charity Events website works</h1>
+    <p class="about-head__lead">
+      This site is the client-side website for the PROG2002 Web Development II charity
+      events case study. It is a fully dynamic website: every event, category and
+      registration you see was fetched from a REST API at the moment the page loaded.
+    </p>
+  </header>
+
+  <div class="about-grid">
+    <section class="panel">
+      <h2>The technology</h2>
+      <dl class="tech-list">
+        <div>
+          <dt>Front end</dt>
+          <dd>Angular (standalone components, signals, RxJS, reactive forms)</dd>
+        </div>
+        <div>
+          <dt>Back end</dt>
+          <dd>Node.js with Express, exposing a RESTful API</dd>
+        </div>
+        <div>
+          <dt>Database</dt>
+          <dd>MySQL — <code>categories</code>, <code>events</code> and <code>registrations</code></dd>
+        </div>
+        <div>
+          <dt>External API</dt>
+          <dd>Open-Meteo, proxied through our own weather endpoint so the weather codes can be translated and cached</dd>
+        </div>
+        <div>
+          <dt>API base URL</dt>
+          <dd><code>{{ apiBase }}</code></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <h2>What each page does</h2>
+      <ul class="flow-list">
+        <li>
+          <strong>Home</strong>
+          <span>Loads the upcoming Active events and the category list from the API.</span>
+        </li>
+        <li>
+          <strong>Search</strong>
+          <span>
+            Sends the keyword, category, status and sort choices to the API and renders
+            exactly what comes back — the filtering happens in SQL, not in the browser.
+          </span>
+        </li>
+        <li>
+          <strong>Event details</strong>
+          <span>
+            Fetches one event together with every registration for it, sorted by the date
+            the tickets were purchased (newest first), and adds a seven-day forecast.
+          </span>
+        </li>
+        <li>
+          <strong>Registration</strong>
+          <span>
+            Confirms the selected event, validates the visitor's details, then posts a new
+            registration and shows a confirmation reference.
+          </span>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="panel panel--flush">
+    <div class="panel__head">
+      <h2>API endpoints used by this website</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Method</th>
+            <th scope="col">Endpoint</th>
+            <th scope="col">What it does</th>
+            <th scope="col">Used by</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (endpoint of endpoints; track endpoint.path + endpoint.method) {
+            <tr>
+              <td><span class="method">{{ endpoint.method }}</span></td>
+              <td><code>{{ endpoint.path }}</code></td>
+              <td>{{ endpoint.purpose }}</td>
+              <td class="muted">{{ endpoint.usedBy }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Data flow, step by step</h2>
+    <ol class="flow-steps">
+      <li>A visitor opens a page and Angular calls one of the endpoints above through <code>HttpClient</code>.</li>
+      <li>The request reaches the Express API, which validates the query and builds a parameterised SQL statement.</li>
+      <li>MySQL returns the rows, and the API shapes them into JSON with consistent field names and number types.</li>
+      <li>An RxJS subscription in the page component receives the response and writes it into an Angular signal.</li>
+      <li>The template re-renders automatically, showing the results, or a loading spinner, or an empty state.</li>
+    </ol>
+    <p class="about-foot">
+      Ready to see it working? <a routerLink="/search">Search for an event</a> and open one.
+    </p>
+  </section>
+</div>

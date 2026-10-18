@@ -1,0 +1,299 @@
+<div class="container page">
+  <!-- ===================== LOADING ===================== -->
+  @if (loading()) {
+    <div class="loading-state" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading event details…</span>
+    </div>
+  }
+
+  <!-- ===================== ERROR ===================== -->
+  @if (!loading() && error()) {
+    <div class="alert alert--error" role="alert">
+      <span class="alert__icon" aria-hidden="true">⚠️</span>
+      <div class="alert__body">
+        <strong>We could not load this event</strong>
+        <p>{{ error() }}</p>
+      </div>
+      <button class="button button--outline button--sm" type="button" (click)="reload()">Try again</button>
+    </div>
+    <a class="button button--ghost" routerLink="/search">Back to search</a>
+  }
+
+  <!-- ===================== EVENT ===================== -->
+  @if (!loading() && event(); as current) {
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/search">Events</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ current.event_name }}</span>
+    </nav>
+
+    <header class="event-head">
+      <div class="event-head__meta">
+        <span class="badge badge--{{ current.status.toLowerCase() }}">{{ current.status }}</span>
+        <span class="badge badge--neutral">{{ current.category_name || 'Uncategorised' }}</span>
+        <span class="event-head__countdown">{{ countdown(current.event_date) }}</span>
+      </div>
+      <h1>{{ current.event_name }}</h1>
+      <p class="event-head__location">
+        <span aria-hidden="true">📍</span>
+        {{ current.location_name }}
+        @if (current.address) { <span class="muted">· {{ current.address }}</span> }
+      </p>
+    </header>
+
+    <div class="event-layout">
+      <!-- ---------- main column ---------- -->
+      <div class="event-main">
+        <div class="event-hero">
+          <img src="event-placeholder.svg" [alt]="current.event_name" />
+        </div>
+
+        <section class="panel">
+          <h2>About this event</h2>
+          <p class="event-description">
+            {{ current.description || 'The organiser has not added a description for this event yet.' }}
+          </p>
+
+          <dl class="fact-grid">
+            <div class="fact">
+              <dt>Starts</dt>
+              <dd>
+                {{ formatDate(current.event_date) }}
+                @if (formatTime(current.event_date)) {
+                  <span class="muted">
+                    at {{ formatTime(current.event_date) }} {{ timeZoneLabel(current.event_date) }}
+                  </span>
+                }
+              </dd>
+            </div>
+            @if (current.end_date) {
+              <div class="fact">
+                <dt>Ends</dt>
+                <dd>
+                  {{ formatDate(current.end_date) }}
+                  @if (formatTime(current.end_date)) {
+                    <span class="muted">
+                      at {{ formatTime(current.end_date) }} {{ timeZoneLabel(current.end_date) }}
+                    </span>
+                  }
+                </dd>
+              </div>
+            }
+            <div class="fact">
+              <dt>Venue</dt>
+              <dd>{{ current.location_name }}</dd>
+            </div>
+            @if (current.address) {
+              <div class="fact">
+                <dt>Address</dt>
+                <dd>{{ current.address }}</dd>
+              </div>
+            }
+            @if (current.latitude !== null && current.longitude !== null) {
+              <div class="fact">
+                <dt>Coordinates</dt>
+                <dd>{{ current.latitude }}, {{ current.longitude }}</dd>
+              </div>
+            }
+            <div class="fact">
+              <dt>Ticket price</dt>
+              <dd class="strong">{{ formatPrice(current.ticket_price) }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ===================== WEATHER ===================== -->
+        <section class="panel weather" aria-labelledby="weather-heading">
+          <div class="panel__head">
+            <h2 id="weather-heading">
+              <span aria-hidden="true">🌤️</span> Weather forecast
+            </h2>
+            @if (weather()) {
+              <span class="badge badge--neutral">Open-Meteo · {{ weather()!.days }} day forecast</span>
+            }
+          </div>
+
+          <div class="panel__body">
+            @if (weatherLoading()) {
+              <div class="loading-state" role="status">
+                <span class="spinner" aria-hidden="true"></span>
+                <span>Fetching the forecast for {{ current.location_name }}…</span>
+              </div>
+            }
+
+            @if (!weatherLoading() && weatherError()) {
+              <div class="alert alert--warn" role="status">
+                <span class="alert__icon" aria-hidden="true">🌦️</span>
+                <div class="alert__body">
+                  <strong>Forecast unavailable</strong>
+                  <p>{{ weatherError() }}</p>
+                </div>
+              </div>
+            }
+
+            @if (!weatherLoading() && weather(); as forecast) {
+              <!-- Highlight for the actual event day when it falls in the window -->
+              @if (eventDayForecast(); as eventDay) {
+                <div class="weather-today">
+                  <span class="weather-today__icon" aria-hidden="true">{{ weatherIcon(eventDay.weather_code) }}</span>
+                  <div>
+                    <p class="weather-today__label">On the day of the event</p>
+                    <p class="weather-today__desc">{{ eventDay.description }}</p>
+                  </div>
+                  <span class="weather-today__temp">{{ temperature(eventDay.temperature_max, eventDay.temperature_min) }}</span>
+                </div>
+              }
+
+              <ul class="weather-strip">
+                @for (day of forecast.daily; track day.date) {
+                  <li class="weather-day">
+                    <span class="weather-day__name">{{ weekday(day.date) }}</span>
+                    <span class="weather-day__date">{{ shortDate(day.date) }}</span>
+                    <span class="weather-day__icon" [title]="day.description" aria-hidden="true">
+                      {{ weatherIcon(day.weather_code) }}
+                    </span>
+                    <span class="weather-day__temp">{{ temperature(day.temperature_max, day.temperature_min) }}</span>
+                    <span class="weather-day__label">{{ day.label }}</span>
+                  </li>
+                }
+              </ul>
+
+              <p class="weather-source">
+                Forecast data from
+                <a [href]="forecast.source" target="_blank" rel="noopener">Open-Meteo</a>
+                for {{ forecast.latitude }}, {{ forecast.longitude }}
+                ({{ forecast.timezone }}). Times and temperatures may change.
+              </p>
+            }
+          </div>
+        </section>
+
+        <!-- ===================== REGISTRATIONS ===================== -->
+        <section class="panel panel--flush" aria-labelledby="registrations-heading">
+          <div class="panel__head">
+            <div>
+              <h2 id="registrations-heading">Who has registered</h2>
+              <p class="panel__sub">
+                {{ current.registration_count }}
+                registration{{ current.registration_count === 1 ? '' : 's' }} ·
+                {{ current.tickets_sold }} ticket{{ current.tickets_sold === 1 ? '' : 's' }} sold ·
+                newest first
+              </p>
+            </div>
+            <span class="badge badge--neutral">{{ remaining(current) }} spaces left</span>
+          </div>
+
+          @if (current.registrations.length) {
+            <div class="table-wrap">
+              <table class="table">
+                <caption class="sr-only">
+                  Registrations for {{ current.event_name }}, sorted by the date the tickets were purchased,
+                  newest first.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Attendee</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col" class="num">Tickets</th>
+                    <th scope="col">Registered</th>
+                    <th scope="col">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (registration of current.registrations; track registration.registration_id) {
+                    <tr>
+                      <td>
+                        <div class="person">
+                          <span class="person__avatar" aria-hidden="true">{{ initials(registration) }}</span>
+                          <span>
+                            <span class="person__name">{{ registration.full_name }}</span>
+                            <span class="person__ref">#{{ registration.registration_id }}</span>
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <a [href]="'mailto:' + registration.email">{{ registration.email }}</a>
+                        <br />
+                        <span class="muted">{{ registration.phone }}</span>
+                      </td>
+                      <td class="num">{{ registration.tickets }}</td>
+                      <td>
+                        {{ formatDateTime(registration.registration_date) }}
+                        <br />
+                        <span class="muted">{{ formatRelative(registration.registration_date) }}</span>
+                      </td>
+                      <td class="muted">{{ registration.notes || '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="empty-state empty-state--inline">
+              <div class="empty-state__icon" aria-hidden="true">🎟️</div>
+              <h3>No one has registered yet</h3>
+              <p>Be the first to support this event.</p>
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- ---------- sidebar ---------- -->
+      <aside class="event-side">
+        <div class="panel booking">
+          <h2 class="booking__price">{{ formatPrice(current.ticket_price) }}</h2>
+          <p class="booking__unit">per ticket</p>
+
+          <div class="booking__progress">
+            <div class="booking__progress-bar" [style.width.%]="percentSold()"></div>
+          </div>
+          <p class="booking__capacity">
+            <strong>{{ current.tickets_sold }}</strong> of {{ current.capacity }} tickets taken
+            <span class="muted">· {{ remaining(current) }} left</span>
+          </p>
+
+          <!-- The Register button now links to the new registration page and
+               passes the event id through the URL query string. -->
+          @if (canRegister()) {
+            <a class="button button--lg booking__cta"
+               [routerLink]="['/events/register']"
+               [queryParams]="{ eventId: current.event_id }">
+              {{ registerLabel() }}
+            </a>
+          } @else {
+            <button class="button button--lg booking__cta" type="button" disabled>
+              {{ registerLabel() }}
+            </button>
+            <p class="booking__note">
+              @if (current.status !== 'Active') {
+                This event is {{ current.status.toLowerCase() }}, so online registration is closed.
+              } @else {
+                Every ticket for this event has been taken.
+              }
+            </p>
+          }
+
+          <ul class="booking__facts">
+            <li><span aria-hidden="true">📅</span> {{ formatDate(current.event_date) }}</li>
+            <li><span aria-hidden="true">📍</span> {{ current.location_name }}</li>
+            <li><span aria-hidden="true">🏷️</span> {{ current.category_name || 'Uncategorised' }}</li>
+          </ul>
+        </div>
+
+        <div class="panel impact">
+          <h3>Support so far</h3>
+          <p class="impact__value">{{ formatPrice(raisedSoFar) }}</p>
+          <p class="muted">
+            Raised from {{ current.tickets_sold }} ticket{{ current.tickets_sold === 1 ? '' : 's' }}
+            for this cause.
+          </p>
+        </div>
+
+        <a class="button button--ghost" routerLink="/search">← Back to all events</a>
+      </aside>
+    </div>
+  }
+</div>
