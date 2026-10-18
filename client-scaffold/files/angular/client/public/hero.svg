@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice"
+     role="img" aria-label="Volunteers joining hands at a community charity event">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#042f2e"/>
+      <stop offset="45%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.24" r="0.6">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#fbbf24" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#115e59"/>
+      <stop offset="100%" stop-color="#062e2c"/>
+    </linearGradient>
+    <linearGradient id="hillB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b4f4a"/>
+      <stop offset="100%" stop-color="#031f1e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1440" height="620" fill="url(#bg)"/>
+  <rect width="1440" height="620" fill="url(#glow)"/>
+
+  <!-- light rays -->
+  <g opacity="0.12" fill="#ffffff">
+    <polygon points="1040,0 1100,0 900,620 830,620"/>
+    <polygon points="1180,0 1225,0 1080,620 1020,620"/>
+  </g>
+
+  <!-- skyline of hills -->
+  <path d="M0 400 L180 320 L330 392 L520 290 L700 386 L880 322 L1060 396 L1240 330 L1440 400
+           L1440 620 L0 620 Z" fill="url(#hillA)"/>
+  <path d="M0 470 L160 430 L340 480 L520 428 L700 484 L900 436 L1100 492 L1280 448 L1440 486
+           L1440 620 L0 620 Z" fill="url(#hillB)"/>
+
+  <!-- row of volunteers holding hands, silhouettes -->
+  <g fill="#04211f" opacity="0.9">
+    <!-- person 1 -->
+    <circle cx="330" cy="392" r="19"/>
+    <path d="M330 412 c-22 0 -34 14 -36 36 l-4 52 h80 l-4 -52 c-2 -22 -14 -36 -36 -36 z"/>
+    <!-- person 2 -->
+    <circle cx="470" cy="378" r="21"/>
+    <path d="M470 400 c-24 0 -37 15 -39 39 l-5 61 h88 l-5 -61 c-2 -24 -15 -39 -39 -39 z"/>
+    <!-- person 3 (centre, tallest) -->
+    <circle cx="620" cy="362" r="23"/>
+    <path d="M620 386 c-26 0 -40 16 -42 42 l-6 72 h96 l-6 -72 c-2 -26 -16 -42 -42 -42 z"/>
+    <!-- person 4 -->
+    <circle cx="772" cy="378" r="21"/>
+    <path d="M772 400 c-24 0 -37 15 -39 39 l-5 61 h88 l-5 -61 c-2 -24 -15 -39 -39 -39 z"/>
+    <!-- person 5 -->
+    <circle cx="912" cy="392" r="19"/>
+    <path d="M912 412 c-22 0 -34 14 -36 36 l-4 52 h80 l-4 -52 c-2 -22 -14 -36 -36 -36 z"/>
+  </g>
+
+  <!-- linked arms -->
+  <g fill="none" stroke="#04211f" stroke-width="15" stroke-linecap="round" opacity="0.9">
+    <path d="M362 452 q54 -26 90 -18"/>
+    <path d="M510 442 q52 -22 88 -16"/>
+    <path d="M664 432 q54 -22 88 -14"/>
+    <path d="M814 442 q52 -22 88 -16"/>
+  </g>
+
+  <!-- heart above the group -->
+  <path d="M620 268 c0 -26 22 -40 38 -26 c12 11 12 26 0 37 l-38 36 l-38 -36
+           c-12 -11 -12 -26 0 -37 c16 -14 38 0 38 26 z"
+        fill="#fbbf24" opacity="0.96"/>
+  <path d="M620 268 c0 -26 22 -40 38 -26 c12 11 12 26 0 37 l-38 36 l-38 -36
+           c-12 -11 -12 -26 0 -37 c16 -14 38 0 38 26 z"
+        fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="3"/>
+
+  <!-- floating light particles -->
+  <g fill="#fbbf24" opacity="0.6">
+    <circle cx="240" cy="200" r="5"/>
+    <circle cx="300" cy="150" r="3"/>
+    <circle cx="980" cy="180" r="5"/>
+    <circle cx="1050" cy="240" r="3"/>
+    <circle cx="120" cy="300" r="4"/>
+    <circle cx="1330" cy="320" r="4"/>
+  </g>
+</svg>

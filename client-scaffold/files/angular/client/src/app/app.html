@@ -1,0 +1,67 @@
+<!-- Site header: brand plus the persistent navigation menu -->
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+          <path d="M12 21s-7.5-4.7-9.3-9A5.4 5.4 0 0 1 12 6.2 5.4 5.4 0 0 1 21.3 12C19.5 16.3 12 21 12 21Z"/>
+        </svg>
+      </span>
+      <span class="brand__text">
+        <strong>Charity Events</strong>
+        <small>Northern Rivers community fundraisers</small>
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" (click)="toggleMenu()"
+            [attr.aria-expanded]="menuOpen()" aria-controls="primary-navigation">
+      <span class="nav-toggle__bars" aria-hidden="true"></span>
+      <span class="sr-only">Toggle navigation</span>
+    </button>
+
+    <nav id="primary-navigation" class="site-nav" [class.site-nav--open]="menuOpen()">
+      <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+         (click)="closeMenu()">Home</a>
+      <a routerLink="/search" routerLinkActive="is-active" (click)="closeMenu()">Find an event</a>
+      <a routerLink="/about" routerLinkActive="is-active" (click)="closeMenu()">About</a>
+      <a class="button button--sm" routerLink="/search" (click)="closeMenu()">Register now</a>
+    </nav>
+  </div>
+</header>
+
+<!-- The routed page renders here -->
+<main id="main-content">
+  <router-outlet />
+</main>
+
+<!-- Site footer -->
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div>
+      <h4>Charity Events</h4>
+      <p>
+        A community fundraising platform for the Northern Rivers region. Every ticket
+        supports local health, education, environment and animal welfare causes.
+      </p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <ul>
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/search">Find an event</a></li>
+        <li><a routerLink="/about">About this project</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:events@charityevents.example">events&#64;charityevents.example</a></li>
+        <li>Lismore, NSW 2480</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container site-footer__base">
+    <p>&copy; {{ year }} Charity Events. Built for PROG2002 Assessment 3.</p>
+    <p class="site-footer__note">Data is served dynamically from the Charity Events REST API.</p>
+  </div>
+</footer>

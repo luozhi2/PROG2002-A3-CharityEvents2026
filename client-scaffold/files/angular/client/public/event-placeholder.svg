@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Charity event artwork">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="55%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#115e59" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#042f2e" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#sky)"/>
+
+  <!-- soft sun -->
+  <circle cx="620" cy="120" r="78" fill="url(#warm)" opacity="0.9"/>
+  <circle cx="620" cy="120" r="118" fill="#fbbf24" opacity="0.16"/>
+
+  <!-- distant hills -->
+  <path d="M0 300 L150 215 L280 292 L420 200 L560 290 L680 235 L800 300 L800 450 L0 450 Z"
+        fill="url(#hill)"/>
+
+  <!-- foreground ridge -->
+  <path d="M0 355 L120 320 L250 362 L390 318 L520 360 L650 326 L800 366 L800 450 L0 450 Z"
+        fill="#042f2e" opacity="0.92"/>
+
+  <!-- linked hands / unity motif -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="7" stroke-linecap="round">
+    <path d="M330 175 q30 -26 60 0"/>
+    <path d="M390 175 q30 -26 60 0"/>
+    <path d="M300 200 q40 -34 80 0 t80 0 t60 0"/>
+  </g>
+  <g fill="#ffffff" fill-opacity="0.9">
+    <circle cx="330" cy="172" r="9"/>
+    <circle cx="390" cy="172" r="9"/>
+    <circle cx="450" cy="172" r="9"/>
+  </g>
+
+  <!-- heart -->
+  <path d="M400 250 c0 -22 18 -34 32 -22 c10 9 10 22 0 31 l-32 30 l-32 -30
+           c-10 -9 -10 -22 0 -31 c14 -12 32 0 32 22 z"
+        fill="#fbbf24" opacity="0.95" transform="translate(0,-6)"/>
+
+  <!-- confetti -->
+  <g opacity="0.55">
+    <rect x="120" y="90" width="10" height="10" rx="2" fill="#ffffff" transform="rotate(24 125 95)"/>
+    <rect x="205" y="140" width="8" height="8" rx="2" fill="#fbbf24" transform="rotate(-18 209 144)"/>
+    <rect x="690" y="285" width="9" height="9" rx="2" fill="#ffffff" transform="rotate(32 694 289)"/>
+    <rect x="95" y="255" width="8" height="8" rx="2" fill="#fbbf24" transform="rotate(-40 99 259)"/>
+    <circle cx="255" cy="70" r="4" fill="#ffffff"/>
+    <circle cx="720" cy="200" r="5" fill="#fbbf24"/>
+  </g>
+</svg>
