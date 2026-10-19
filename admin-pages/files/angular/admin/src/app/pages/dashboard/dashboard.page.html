@@ -1,0 +1,184 @@
+<!--
+  Dashboard: summary of the whole program. Every figure below is calculated from
+  GET /api/events and GET /api/registrations - nothing is hard-coded.
+-->
+<section>
+  <header class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="page-lede">
+        Summary of all charity events, registrations and ticket sales, derived from
+        <span class="mono">GET /api/events</span> and <span class="mono">GET /api/registrations</span>.
+      </p>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost" (click)="load()" [disabled]="loading()">
+        @if (loading()) { Refreshing… } @else { Refresh }
+      </button>
+      <a class="btn" routerLink="/events/new">＋ New event</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading dashboard data from the API…
+    </div>
+  } @else if (loadError(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">The dashboard data could not be loaded</p>
+      <p>{{ problem.message }}</p>
+      @if (problem.status === 0) {
+        <p class="banner-hint">
+          Start the API with <span class="mono">node server.js</span> in the
+          <span class="mono">api</span> folder, then press Refresh.
+        </p>
+      }
+      <div class="btn-row banner-actions">
+        <button type="button" class="btn btn--sm" (click)="load()">Try again</button>
+      </div>
+    </div>
+  } @else {
+    <!-- ------------------------------ KPIs ------------------------------ -->
+    <div class="metrics">
+      @for (metric of metrics(); track metric.label) {
+        <article class="metric" [class]="'metric metric--' + metric.tone">
+          <p class="metric__label">{{ metric.label }}</p>
+          <p class="metric__value">{{ metric.value }}</p>
+          <p class="metric__hint">{{ metric.hint }}</p>
+        </article>
+      }
+    </div>
+
+    <!-- --------------------------- breakdown ---------------------------- -->
+    <div class="panels">
+      <section class="card">
+        <div class="card__head">
+          <h2>Events by status</h2>
+          <a class="card__hint" routerLink="/events">View all events →</a>
+        </div>
+        <ul class="breakdown">
+          <li>
+            <span class="status status--Active">Active</span>
+            <strong>{{ statusCounts().Active }}</strong>
+            <span class="muted">accepting registrations</span>
+          </li>
+          <li>
+            <span class="status status--Past">Past</span>
+            <strong>{{ statusCounts().Past }}</strong>
+            <span class="muted">already finished</span>
+          </li>
+          <li>
+            <span class="status status--Suspended">Suspended</span>
+            <strong>{{ statusCounts().Suspended }}</strong>
+            <span class="muted">cancelled or on hold</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h2>Best performing events</h2>
+          <span class="card__hint">By tickets sold</span>
+        </div>
+        @if (topEvents().length) {
+          <ul class="bar-list">
+            @for (event of topEvents(); track event.event_id) {
+              <li class="bar">
+                <div class="bar__head">
+                  <a [routerLink]="['/events', event.event_id, 'edit']">{{ event.event_name }}</a>
+                  <span class="muted">{{ event.tickets_sold }} / {{ event.capacity }}</span>
+                </div>
+                <div class="bar__track">
+                  <div
+                    class="bar__fill"
+                    [style.width.%]="event.capacity > 0 ? (event.tickets_sold / event.capacity) * 100 : 0"
+                  ></div>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="muted">No events have been created yet.</p>
+        }
+      </section>
+    </div>
+
+    <!-- ------------------------ upcoming events -------------------------- -->
+    <section class="card panel-block">
+      <div class="card__head">
+        <h2>Upcoming events ({{ upcomingEvents().length }})</h2>
+        <span class="card__hint">Active events with a future start date, soonest first</span>
+      </div>
+
+      @if (upcomingEvents().length) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="visually-hidden">Upcoming active events</caption>
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Event</th>
+                <th scope="col">Category</th>
+                <th scope="col">Starts</th>
+                <th scope="col">Location</th>
+                <th scope="col" class="num">Tickets / capacity</th>
+                <th scope="col" class="num">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (event of upcomingEvents(); track event.event_id) {
+                <tr>
+                  <td class="mono">#{{ event.event_id }}</td>
+                  <td class="wrap">
+                    <a [routerLink]="['/events', event.event_id, 'edit']" class="strong">
+                      {{ event.event_name }}
+                    </a>
+                  </td>
+                  <td>{{ event.category_name ?? '—' }}</td>
+                  <td>{{ formatDate(event.event_date) }}</td>
+                  <td class="wrap">{{ event.location_name }}</td>
+                  <td class="num">{{ event.tickets_sold }} / {{ event.capacity }}</td>
+                  <td class="num">{{ formatCurrency(event.ticket_price) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="state">
+          <h3>No upcoming events</h3>
+          <p>Every active event is in the past, or no active event has been scheduled yet.</p>
+          <a class="btn" routerLink="/events/new">＋ Create an event</a>
+        </div>
+      }
+    </section>
+
+    <!-- --------------------- latest registrations ------------------------ -->
+    <section class="card panel-block">
+      <div class="card__head">
+        <h2>Latest registrations</h2>
+        <span class="card__hint">Newest five from GET /api/registrations</span>
+      </div>
+
+      @if (latestRegistrations().length) {
+        <ul class="feed">
+          @for (registration of latestRegistrations(); track registration.registration_id) {
+            <li class="feed__item">
+              <div>
+                <p class="feed__name">{{ registration.full_name }}</p>
+                <p class="feed__meta muted">
+                  {{ registration.event_name ?? 'Event #' + registration.event_id }} ·
+                  {{ registration.tickets }} ticket{{ registration.tickets === 1 ? '' : 's' }}
+                </p>
+              </div>
+              <span class="feed__date muted">{{ formatDateTime(registration.registration_date) }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="muted">No registrations have been recorded yet.</p>
+      }
+    </section>
+  }
+</section>

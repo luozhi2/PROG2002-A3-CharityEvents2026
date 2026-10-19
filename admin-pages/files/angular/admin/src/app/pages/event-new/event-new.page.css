@@ -1,0 +1,10 @@
+/* New Event page: only the banner extras are page specific. */
+
+.banner-actions {
+  margin-top: 0.75rem;
+}
+
+.banner-hint {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}

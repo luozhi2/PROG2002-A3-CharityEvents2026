@@ -1,0 +1,94 @@
+<!--
+  Categories page: the categories that events can be filed under, each with the
+  event_count computed by GET /api/categories. Read-only by design.
+-->
+<section>
+  <header class="page-head">
+    <div>
+      <h1>Categories</h1>
+      <p class="page-lede">
+        Every category in the <span class="mono">categories</span> table, with the number of events the
+        API reports for it. This list also populates the Category dropdown on the New and Edit event forms.
+      </p>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost" (click)="load()" [disabled]="loading()">
+        @if (loading()) { Refreshing… } @else { Refresh }
+      </button>
+      <a class="btn" routerLink="/events/new">＋ New event</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading categories from GET /api/categories…
+    </div>
+  } @else if (loadError(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">The categories could not be loaded</p>
+      <p>{{ problem.message }}</p>
+      @if (problem.status === 0) {
+        <p class="banner-hint">
+          Start the API with <span class="mono">node server.js</span> in the
+          <span class="mono">api</span> folder and press Refresh.
+        </p>
+      }
+      <div class="btn-row banner-actions">
+        <button type="button" class="btn btn--sm" (click)="load()">Try again</button>
+      </div>
+    </div>
+  } @else if (categories().length === 0) {
+    <div class="state">
+      <h3>No categories found</h3>
+      <p>
+        The API returned an empty category list. Import <span class="mono">api/schema.sql</span> and
+        <span class="mono">api/seed.sql</span> to create the starter categories.
+      </p>
+    </div>
+  } @else {
+    <p class="result-count">
+      <strong>{{ categories().length }}</strong> categories covering
+      <strong>{{ totalEvents() }}</strong> events in total.
+      @if (busiestCategory(); as busiest) {
+        Largest: <strong>{{ busiest.category_name }}</strong> ({{ busiest.event_count }} events).
+      }
+    </p>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption class="visually-hidden">Event categories and how many events use each one</caption>
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Category</th>
+            <th scope="col">Description</th>
+            <th scope="col" class="num">Events</th>
+            <th scope="col">Share of events</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categories(); track category.category_id) {
+            <tr>
+              <td class="mono">#{{ category.category_id }}</td>
+              <td class="strong">{{ category.category_name }}</td>
+              <td class="wrap muted">{{ category.description ?? '—' }}</td>
+              <td class="num">{{ category.event_count }}</td>
+              <td class="share-cell">
+                <div class="share">
+                  <div class="share__fill" [style.width.%]="sharePercent(category.event_count)"></div>
+                </div>
+                <span class="share__label">{{ sharePercent(category.event_count) }}%</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="table-foot">
+      Totals are computed by <span class="mono">GET /api/categories</span>. Categories are managed in the
+      database (this screen is read-only, as the assessment brief requires no category CRUD).
+    </p>
+  }
+</section>

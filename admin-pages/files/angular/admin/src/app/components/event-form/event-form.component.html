@@ -1,0 +1,244 @@
+<!--
+  Shared New/Edit event form. Every control is bound with formControlName and
+  gets a field-level message underneath once it is touched (or after a failed
+  submit attempt). The page that hosts this form owns the submit button state
+  and the success/error banners.
+-->
+<form class="event-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  @if (isEditMode()) {
+    <p class="form-context">
+      Editing <span class="strong">{{ editingLabel }}</span>
+    </p>
+  }
+
+  <!-- ======================= General information ======================= -->
+  <fieldset class="form-section">
+    <legend>Event details</legend>
+
+    <div class="form-grid">
+      <div class="field field--wide">
+        <label for="event_name">
+          Event name <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input
+          id="event_name"
+          type="text"
+          formControlName="event_name"
+          maxlength="150"
+          autocomplete="off"
+          placeholder="e.g. Coastal Clean-Up Charity Walk"
+          [attr.aria-invalid]="errorFor('event_name') ? true : null"
+        />
+        @if (errorFor('event_name'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Between 3 and 150 characters.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="category_id">
+          Category <span class="required" aria-hidden="true">*</span>
+        </label>
+        <select id="category_id" formControlName="category_id">
+          @if (loadingCategories()) {
+            <option [value]="0">Loading categories…</option>
+          } @else {
+            <option [value]="0">Select a category…</option>
+            @for (category of categories(); track category.category_id) {
+              <option [value]="category.category_id">{{ category.category_name }}</option>
+            }
+          }
+        </select>
+        @if (categoriesError(); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else if (errorFor('category_id'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Options come from GET /api/categories.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label id="status-label">
+          Status <span class="required" aria-hidden="true">*</span>
+        </label>
+        <div class="radio-group" role="radiogroup" aria-labelledby="status-label">
+          @for (status of statuses; track status) {
+            <label class="radio" [class.radio--checked]="form.controls.status.value === status">
+              <input
+                type="radio"
+                name="status"
+                [value]="status"
+                [checked]="form.controls.status.value === status"
+                (change)="setStatus(status)"
+              />
+              <span>{{ status }}</span>
+            </label>
+          }
+        </div>
+        @if (errorFor('status'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field field--wide">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="4"
+          maxlength="5000"
+          placeholder="What is the event raising money for, and what happens on the day?"
+        ></textarea>
+        @if (errorFor('description'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Optional. Up to 5000 characters.</p>
+        }
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ==================== Schedule and location ======================== -->
+  <fieldset class="form-section">
+    <legend>When and where</legend>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="event_date">
+          Start date and time <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input id="event_date" type="datetime-local" formControlName="event_date" />
+        @if (errorFor('event_date'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">
+            Venue local time ({{ zoneLabel }}) — not your own timezone.
+          </p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="end_date">End date and time</label>
+        <input id="end_date" type="datetime-local" formControlName="end_date" />
+        @if (endDateError; as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else if (errorFor('end_date'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">
+            Optional. Venue local time ({{ zoneLabel }}), and must not be earlier than the start.
+          </p>
+        }
+      </div>
+
+      <div class="field field--wide">
+        <label for="location_name">
+          Location name <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input
+          id="location_name"
+          type="text"
+          formControlName="location_name"
+          maxlength="150"
+          placeholder="e.g. Lismore Riverside Park"
+        />
+        @if (errorFor('location_name'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field field--wide">
+        <label for="address">Street address</label>
+        <input
+          id="address"
+          type="text"
+          formControlName="address"
+          maxlength="255"
+          placeholder="e.g. Riverside Park, Lismore NSW 2480"
+        />
+        @if (errorFor('address'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="latitude">Latitude</label>
+        <input
+          id="latitude"
+          type="number"
+          step="0.000001"
+          formControlName="latitude"
+          placeholder="-28.813000"
+        />
+        @if (errorFor('latitude'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Optional, -90 to 90. Used by the weather API.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="longitude">Longitude</label>
+        <input
+          id="longitude"
+          type="number"
+          step="0.000001"
+          formControlName="longitude"
+          placeholder="153.278000"
+        />
+        @if (errorFor('longitude'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Optional, -180 to 180. Used by the weather API.</p>
+        }
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ===================== Capacity and pricing ======================== -->
+  <fieldset class="form-section">
+    <legend>Capacity and tickets</legend>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="capacity">
+          Capacity <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input id="capacity" type="number" min="1" step="1" formControlName="capacity" />
+        @if (errorFor('capacity'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">Whole numbers only, at least 1.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="ticket_price">
+          Ticket price (AUD) <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input id="ticket_price" type="number" min="0" step="0.01" formControlName="ticket_price" />
+        @if (errorFor('ticket_price'); as message) {
+          <p class="field__error" role="alert">{{ message }}</p>
+        } @else {
+          <p class="field__hint">{{ priceHint() }}</p>
+        }
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-actions">
+    <button type="submit" class="btn" [disabled]="submitting()">
+      @if (submitting()) {
+        <span class="spinner spinner--light" aria-hidden="true"></span>
+        Saving…
+      } @else {
+        {{ isEditMode() ? 'Save changes' : 'Create event' }}
+      }
+    </button>
+    <button type="button" class="btn btn--ghost" (click)="onCancel()" [disabled]="submitting()">
+      Cancel
+    </button>
+  </div>
+</form>

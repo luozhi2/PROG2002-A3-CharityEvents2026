@@ -1,0 +1,67 @@
+<!--
+  New Event page: page header, success/error banners from POST /api/events, and
+  the shared validated event form.
+-->
+<section>
+  <p class="breadcrumb"><a routerLink="/events">Events</a> / New event</p>
+
+  <header class="page-head">
+    <div>
+      <h1>Create a new event</h1>
+      <p class="page-lede">
+        All fields marked with <span class="required">*</span> are required. Validation runs in the browser
+        first, then the event is saved with <span class="mono">POST /api/events</span>.
+      </p>
+    </div>
+    <a class="btn btn--ghost" routerLink="/events">Back to events</a>
+  </header>
+
+  <!-- Success: the API's 201 response, including the new event id. -->
+  @if (created(); as event) {
+    <div class="banner banner--success" role="status">
+      <p class="banner__title">Event created — new id #{{ event.event_id }}</p>
+      <p>
+        “{{ event.event_name }}” was saved successfully
+        @if (event.event_date) {
+          with a start of {{ formatDateTime(event.event_date) }}
+        }.
+      </p>
+      <div class="btn-row banner-actions">
+        <a class="btn btn--sm" [routerLink]="event.editUrl">Edit this event</a>
+        <a class="btn btn--sm btn--ghost" routerLink="/events">View all events</a>
+        <button type="button" class="btn btn--sm btn--ghost" (click)="clearCreated()">
+          Create another event
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Failure: the API's error message plus every entry of details[]. -->
+  @if (failure(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">The event could not be saved</p>
+      <p>{{ problem.message }}</p>
+      @if (problem.details.length) {
+        <ul>
+          @for (detail of problem.details; track detail) {
+            <li>{{ detail }}</li>
+          }
+        </ul>
+      }
+      @if (problem.status === 0) {
+        <p class="banner-hint">
+          Start the API with <span class="mono">node server.js</span> in the <span class="mono">api</span>
+          folder, then submit again.
+        </p>
+      }
+    </div>
+  }
+
+  <app-event-form
+    [reloadToken]="formVersion()"
+    [submitting]="saving()"
+    [fieldErrors]="fieldErrors()"
+    (saveEvent)="onSave($event)"
+    (cancelled)="onCancel()"
+  />
+</section>

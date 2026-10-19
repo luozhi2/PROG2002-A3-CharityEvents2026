@@ -1,0 +1,222 @@
+<!--
+  Events list: every event regardless of status, with server-side search and
+  status filtering and a per-row Edit / Delete action.
+-->
+<section>
+  <header class="page-head">
+    <div>
+      <h1>Events</h1>
+      <p class="page-lede">
+        All events in the database — Active, Past and Suspended. Searching and filtering run on the
+        server through <span class="mono">GET /api/events?search=&amp;status=</span>.
+      </p>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="btn btn--ghost" (click)="loadEvents()" [disabled]="loading()">
+        @if (loading()) { Refreshing… } @else { Refresh }
+      </button>
+      <a class="btn" routerLink="/events/new">＋ New event</a>
+    </div>
+  </header>
+
+  <!-- ------------------------------ filters ------------------------------ -->
+  <form class="card filters-card" (ngSubmit)="$event.preventDefault()">
+    <div class="filters">
+      <div class="field">
+        <label for="search">Search events</label>
+        <input
+          id="search"
+          type="search"
+          name="search"
+          placeholder="Name, location or description…"
+          [value]="search()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+        <p class="field__hint">Sent to the API as <span class="mono">?search=</span> (debounced).</p>
+      </div>
+
+      <div class="field">
+        <label for="status">Status</label>
+        <select
+          id="status"
+          name="status"
+          [value]="status()"
+          (change)="status.set($any($event.target).value); loadEvents()"
+        >
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <p class="field__hint">Sent to the API as <span class="mono">?status=</span>.</p>
+      </div>
+
+      <div class="field">
+        <label for="sort">Sort by</label>
+        <select
+          id="sort"
+          name="sort"
+          [value]="sort()"
+          (change)="sort.set($any($event.target).value); loadEvents()"
+        >
+          @for (option of sortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <p class="field__hint">Sent to the API as <span class="mono">?sort=</span>.</p>
+      </div>
+
+      <div class="field filters__actions">
+        <button type="button" class="btn btn--ghost" (click)="clearFilters()">Clear filters</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- --------------------------- feedback ------------------------------- -->
+  @if (successMessage(); as message) {
+    <div class="banner banner--success" role="status">
+      <p class="banner__title">{{ message }}</p>
+      <button type="button" class="btn btn--sm btn--ghost banner-close" (click)="dismissSuccess()">
+        Dismiss
+      </button>
+    </div>
+  }
+
+  <!-- DELETE failure. A 409 is the integrity rule: the server message is shown. -->
+  @if (deleteError(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">
+        @if (problem.failure.status === 409) {
+          Event #{{ problem.eventId }} cannot be deleted
+        } @else {
+          The event could not be deleted
+        }
+      </p>
+      <p>{{ problem.failure.message }}</p>
+      @if (problem.failure.details.length) {
+        <ul>
+          @for (detail of problem.failure.details; track detail) {
+            <li>{{ detail }}</li>
+          }
+        </ul>
+      }
+      <p class="banner-hint">
+        The API answers <span class="mono">409 Conflict</span> when an event still has registrations.
+        Suspend the event instead, or remove the registrations first.
+      </p>
+      <button type="button" class="btn btn--sm btn--ghost banner-close" (click)="dismissDeleteError()">
+        Dismiss
+      </button>
+    </div>
+  }
+
+  <!-- ------------------------ list / loading / errors -------------------- -->
+  @if (loading()) {
+    <div class="loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading events from GET /api/events…
+    </div>
+  } @else if (listError(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">The event list could not be loaded</p>
+      <p>{{ problem.message }}</p>
+      @if (problem.status === 0) {
+        <p class="banner-hint">
+          Start the API with <span class="mono">node server.js</span> in the
+          <span class="mono">api</span> folder and press Refresh.
+        </p>
+      }
+      <div class="btn-row banner-actions">
+        <button type="button" class="btn btn--sm" (click)="loadEvents()">Try again</button>
+      </div>
+    </div>
+  } @else if (events().length === 0) {
+    <div class="state">
+      <h3>No events found</h3>
+      <p>
+        @if (hasActiveFilters) {
+          No event matches the current search or status filter. Try clearing the filters.
+        } @else {
+          The database does not contain any events yet. Create the first one to get started.
+        }
+      </p>
+      <div class="btn-row state-actions">
+        @if (hasActiveFilters) {
+          <button type="button" class="btn btn--ghost" (click)="clearFilters()">Clear filters</button>
+        }
+        <a class="btn" routerLink="/events/new">＋ New event</a>
+      </div>
+    </div>
+  } @else {
+    <p class="result-count">
+      Showing <strong>{{ resultCount() }}</strong> event{{ resultCount() === 1 ? '' : 's' }}
+      @if (status()) { with status <strong>{{ status() }}</strong> }
+      @if (search()) { matching “<strong>{{ search() }}</strong>” }.
+    </p>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption class="visually-hidden">All charity events</caption>
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Event name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Date</th>
+            <th scope="col">Location</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="num">Capacity</th>
+            <th scope="col" class="num">Regs</th>
+            <th scope="col" class="num">Tickets sold</th>
+            <th scope="col" class="num">Price</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of events(); track event.event_id) {
+            <tr [class.row--flagged]="deleteError()?.eventId === event.event_id">
+              <td class="mono">#{{ event.event_id }}</td>
+              <td class="wrap">
+                <span class="strong">{{ event.event_name }}</span>
+              </td>
+              <td>{{ event.category_name ?? '—' }}</td>
+              <td>{{ formatDate(event.event_date) }}</td>
+              <td class="wrap">{{ event.location_name }}</td>
+              <td>
+                <span class="status" [class]="statusClass(event.status)">{{ event.status }}</span>
+              </td>
+              <td class="num">{{ event.capacity }}</td>
+              <td class="num">{{ event.registration_count }}</td>
+              <td class="num">{{ event.tickets_sold }}</td>
+              <td class="num">{{ formatCurrency(event.ticket_price) }}</td>
+              <td>
+                <div class="row-actions">
+                  <a
+                    class="btn btn--sm btn--ghost"
+                    [routerLink]="['/events', event.event_id, 'edit']"
+                    [attr.aria-label]="'Edit ' + event.event_name"
+                  >
+                    Edit
+                  </a>
+                  <button
+                    type="button"
+                    class="btn btn--sm btn--danger"
+                    (click)="onDelete(event)"
+                    [disabled]="deletingId() === event.event_id"
+                    [attr.aria-label]="'Delete ' + event.event_name"
+                  >
+                    @if (deletingId() === event.event_id) { Deleting… } @else { Delete }
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="table-foot">
+      {{ resultCount() }} row{{ resultCount() === 1 ? '' : 's' }} returned by the API. Deletion is
+      refused with <span class="mono">409 Conflict</span> for events that have registrations.
+    </p>
+  }
+</section>

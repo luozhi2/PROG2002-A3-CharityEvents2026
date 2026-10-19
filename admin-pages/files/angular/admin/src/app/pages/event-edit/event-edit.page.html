@@ -1,0 +1,193 @@
+<!--
+  Edit Event page: loading / load-error states, the pre-filled shared form, the
+  registration data for this event (newest first) and the delete action whose
+  409 message is displayed inline.
+-->
+<section>
+  <p class="breadcrumb"><a routerLink="/events">Events</a> / Edit event</p>
+
+  @if (loading()) {
+    <div class="loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading event #{{ eventId }} from GET /api/events/:id…
+    </div>
+  }
+
+  <!-- The event could not be read (404, bad id, or the API is down). -->
+  @if (loadError(); as problem) {
+    <div class="banner banner--error" role="alert">
+      <p class="banner__title">This event could not be loaded</p>
+      <p>{{ problem.message }}</p>
+      @if (problem.details.length) {
+        <ul>
+          @for (detail of problem.details; track detail) {
+            <li>{{ detail }}</li>
+          }
+        </ul>
+      }
+      <div class="btn-row banner-actions">
+        <button type="button" class="btn btn--sm" (click)="loadEvent()">Try again</button>
+        <a class="btn btn--sm btn--ghost" routerLink="/events">Back to events</a>
+      </div>
+    </div>
+  }
+
+  @if (event(); as current) {
+    <header class="page-head">
+      <div>
+        <h1>Edit event #{{ current.event_id }}</h1>
+        <p class="page-lede">
+          {{ current.event_name }} · {{ current.category_name ?? 'Uncategorised' }} ·
+          <span class="status" [class]="statusClass(current.status)">{{ current.status }}</span>
+        </p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--ghost" routerLink="/events">Back to events</a>
+        <button type="button" class="btn btn--danger" (click)="onDelete()" [disabled]="deleting()">
+          @if (deleting()) { Deleting… } @else { Delete event }
+        </button>
+      </div>
+    </header>
+
+    <!-- Summary of the row as stored, so the admin can compare before saving. -->
+    <div class="summary">
+      <div class="summary__item">
+        <span class="summary__label">Starts</span>
+        <span class="summary__value">{{ formatDateTime(current.event_date) }}</span>
+      </div>
+      <div class="summary__item">
+        <span class="summary__label">Location</span>
+        <span class="summary__value">{{ current.location_name }}</span>
+      </div>
+      <div class="summary__item">
+        <span class="summary__label">Ticket price</span>
+        <span class="summary__value">{{ formatCurrency(current.ticket_price) }}</span>
+      </div>
+      <div class="summary__item">
+        <span class="summary__label">Registrations</span>
+        <span class="summary__value">{{ current.registration_count }}</span>
+      </div>
+      <div class="summary__item">
+        <span class="summary__label">Tickets sold</span>
+        <span class="summary__value">{{ current.tickets_sold }} / {{ current.capacity }}</span>
+      </div>
+      <div class="summary__item">
+        <span class="summary__label">Last updated</span>
+        <span class="summary__value">{{ formatDateTime(current.updated_at) }}</span>
+      </div>
+    </div>
+
+    <!-- Feedback for PUT /api/events/:id -->
+    @if (saveMessage(); as message) {
+      <div class="banner banner--success" role="status">
+        <p class="banner__title">Saved</p>
+        <p>{{ message }}</p>
+      </div>
+    }
+
+    @if (saveError(); as problem) {
+      <div class="banner banner--error" role="alert">
+        <p class="banner__title">The event could not be updated</p>
+        <p>{{ problem.message }}</p>
+        @if (problem.details.length) {
+          <ul>
+            @for (detail of problem.details; track detail) {
+              <li>{{ detail }}</li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    <!-- DELETE 409 (or any other delete failure) is shown here, inline. -->
+    @if (deleteError(); as problem) {
+      <div class="banner banner--error" role="alert">
+        <p class="banner__title">
+          @if (problem.status === 409) {
+            Delete blocked by a data-integrity rule
+          } @else {
+            The event could not be deleted
+          }
+        </p>
+        <p>{{ problem.message }}</p>
+        @if (problem.details.length) {
+          <ul>
+            @for (detail of problem.details; track detail) {
+              <li>{{ detail }}</li>
+            }
+          </ul>
+        }
+        <p class="banner-hint">
+          The API answers <span class="mono">409 Conflict</span> while an event still has
+          registrations. Suspend the event, or remove its registrations, before deleting it.
+        </p>
+      </div>
+    }
+
+    <app-event-form
+      [event]="current"
+      [reloadToken]="formVersion()"
+      [submitting]="saving()"
+      [fieldErrors]="fieldErrors()"
+      (saveEvent)="onSave($event)"
+      (cancelled)="onCancel()"
+    />
+
+    <!-- ============ Registrations for this event (newest first) ============ -->
+    <section class="card registrations">
+      <div class="card__head">
+        <h2>Registrations ({{ current.registration_count }})</h2>
+        <span class="card__hint">
+          From <span class="mono">GET /api/events/{{ current.event_id }}</span>, sorted newest first ·
+          {{ current.tickets_sold }} of {{ current.capacity }} tickets sold
+        </span>
+      </div>
+
+      <!-- Capacity bar: a quick visual of how full the event is. -->
+      <div class="capacity" role="img" [attr.aria-label]="capacityUsedPercent + '% of capacity sold'">
+        <div class="capacity__fill" [style.width.%]="capacityUsedPercent"></div>
+      </div>
+      <p class="capacity__label">{{ capacityUsedPercent }}% of capacity sold</p>
+
+      @if (registrations.length) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="visually-hidden">Registrations for {{ current.event_name }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Ref</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col" class="num">Tickets</th>
+                <th scope="col">Registered</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (registration of registrations; track registration.registration_id) {
+                <tr>
+                  <td class="mono">#{{ registration.registration_id }}</td>
+                  <td class="strong">{{ registration.full_name }}</td>
+                  <td>{{ registration.email }}</td>
+                  <td>{{ registration.phone }}</td>
+                  <td class="num">{{ registration.tickets }}</td>
+                  <td>{{ formatDateTime(registration.registration_date) }}</td>
+                  <td class="wrap muted">{{ registration.notes ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="state">
+          <h3>No registrations yet</h3>
+          <p>
+            Nobody has registered for this event, so it can still be deleted. Registration date
+            {{ formatDate(current.event_date) }}.
+          </p>
+        </div>
+      }
+    </section>
+  }
+</section>

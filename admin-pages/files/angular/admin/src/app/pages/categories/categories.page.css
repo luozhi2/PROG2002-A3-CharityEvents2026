@@ -1,0 +1,49 @@
+/* Categories page: result summary line, share bar per category. */
+
+.result-count {
+  margin-bottom: 0.75rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.share-cell {
+  min-width: 12rem;
+}
+
+.share {
+  display: inline-block;
+  width: 8rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.share__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-strong));
+}
+
+.share__label {
+  margin-left: 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-foot {
+  margin-top: 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+.banner-hint {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.banner-actions {
+  margin-top: 0.75rem;
+}

@@ -1,0 +1,46 @@
+/* Events list page: filter bar, result count and the highlighted failing row. */
+
+.filters-card {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+}
+
+.filters__actions {
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+.result-count {
+  margin-bottom: 0.75rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.table-foot {
+  margin-top: 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+/* The row whose delete attempt was refused by the API. */
+.row--flagged {
+  background: #fff7f7;
+  box-shadow: inset 3px 0 0 var(--red);
+}
+
+.banner-hint {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.banner-actions {
+  margin-top: 0.75rem;
+}
+
+.banner-close {
+  margin-top: 0.6rem;
+}
+
+.state-actions {
+  justify-content: center;
+}

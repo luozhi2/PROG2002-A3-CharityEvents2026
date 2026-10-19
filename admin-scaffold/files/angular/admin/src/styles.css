@@ -1,0 +1,501 @@
+/*
+  Global styles for the Charity Events admin website.
+  -----------------------------------------------------------------------------
+  This file holds the shared design tokens (colours, radius, shadow) and the few
+  generic building blocks that more than one page uses: cards, buttons, tables,
+  status pills, banners and reactive-form controls. Component-specific layout
+  lives in each component's own stylesheet.
+
+  No CSS framework and no CDN links are used - everything below is hand written.
+*/
+
+:root {
+  /* brand + surfaces */
+  --brand: #38bdf8;
+  --brand-strong: #0284c7;
+  --brand-ink: #0369a1;
+  --brand-soft: #e0f2fe;
+
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+
+  /* text */
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-muted: #64748b;
+
+  /* dark sidebar palette */
+  --sidebar-bg: #0f172a;
+  --sidebar-line: #1e293b;
+  --sidebar-text: #cbd5e1;
+  --sidebar-muted: #7c8ba1;
+
+  /* status colours (Active / Past / Suspended) */
+  --green: #047857;
+  --green-soft: #d1fae5;
+  --amber: #b45309;
+  --amber-soft: #fef3c7;
+  --red: #b91c1c;
+  --red-soft: #fee2e2;
+  --slate-400: #94a3b8;
+
+  /* shape */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--brand-ink);
+}
+
+/* ------------------------------- page head ------------------------------- */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-head h1 {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.page-head .page-lede {
+  margin-top: 0.35rem;
+  color: var(--ink-muted);
+  max-width: 60ch;
+  font-size: 0.9rem;
+}
+
+.breadcrumb {
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------- cards -------------------------------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
+
+.card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card__head h2 {
+  font-size: 1.05rem;
+}
+
+.card__hint {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+}
+
+/* -------------------------------- buttons ------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--brand-strong);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--brand-ink);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--ink-soft);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+
+.btn--danger {
+  background: var(--surface);
+  border-color: #fca5a5;
+  color: var(--red);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--red-soft);
+}
+
+.btn--sm {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* --------------------------------- table -------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table caption {
+  caption-side: top;
+  padding: 0.75rem 1rem;
+  color: var(--ink-muted);
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.data-table thead th {
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.data-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table .strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.data-table .wrap {
+  white-space: normal;
+  min-width: 12rem;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* ------------------------------ status pill ----------------------------- */
+.status {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.status--Active {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.status--Past {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.status--Suspended {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+/* -------------------------------- banners ------------------------------- */
+.banner {
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.banner__title {
+  font-weight: 700;
+}
+
+.banner ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.banner--success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  border-left-color: #10b981;
+  color: #065f46;
+}
+
+.banner--error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+
+.banner--info {
+  background: var(--brand-soft);
+  border-color: #bae6fd;
+  border-left-color: var(--brand-strong);
+  color: #075985;
+}
+
+/* ------------------------------ empty states ---------------------------- */
+.state {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--ink-muted);
+  background: var(--surface);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.state h3 {
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.state .btn {
+  margin-top: 1rem;
+}
+
+/* -------------------------------- spinner ------------------------------- */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--brand-strong);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------- reactive form fields ----------------------- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field .required {
+  color: var(--red);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.55);
+  outline-offset: 1px;
+  border-color: var(--brand-strong);
+}
+
+.field input.ng-invalid.ng-touched,
+.field select.ng-invalid.ng-touched,
+.field textarea.ng-invalid.ng-touched {
+  border-color: #f87171;
+  background: #fff7f7;
+}
+
+.field__hint {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+}
+
+/* Field-level validation message rendered by each reactive form. */
+.field__error {
+  color: var(--red);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* --------------------------- filter/search bar -------------------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.filters .field {
+  min-width: 11rem;
+}
+
+.filters input,
+.filters select {
+  min-width: 11rem;
+}
+
+/* ------------------------------- utilities ------------------------------ */
+.muted {
+  color: var(--ink-muted);
+}
+
+.mono {
+  font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+  font-size: 0.85em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

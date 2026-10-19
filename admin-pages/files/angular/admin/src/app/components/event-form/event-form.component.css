@@ -1,0 +1,92 @@
+/*
+  Layout for the shared New/Edit event form: grouped fieldsets, a responsive
+  two-column grid, and a compact radio group for the three event statuses.
+  Generic control styling (inputs, labels, hints, errors) lives in styles.css.
+*/
+
+:host {
+  display: block;
+}
+
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-context {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: #075985;
+  font-size: 0.85rem;
+}
+
+.form-context .strong {
+  font-weight: 700;
+}
+
+.form-section {
+  margin: 0;
+  padding: 1.1rem 1.25rem 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.form-section legend {
+  padding: 0 0.4rem;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  padding-top: 0.25rem;
+}
+
+/* --------------------------- status radio group -------------------------- */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.radio--checked {
+  border-color: var(--brand-strong);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-weight: 600;
+}
+
+.radio input {
+  margin: 0;
+  accent-color: var(--brand-strong);
+}
+
+/* Spinner used inside the submit button (the shared one assumes a light bg). */
+.spinner--light {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-color: rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+}

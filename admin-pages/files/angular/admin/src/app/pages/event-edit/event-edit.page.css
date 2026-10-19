@@ -1,0 +1,68 @@
+/* Edit Event page: the stored-value summary strip and the capacity bar. */
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.summary__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.summary__label {
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary__value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.registrations {
+  margin-top: 1.5rem;
+}
+
+.capacity {
+  height: 0.5rem;
+  margin-bottom: 0.35rem;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.capacity__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-strong));
+  transition: width 200ms ease;
+}
+
+.capacity__label {
+  margin-bottom: 1rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+}
+
+.banner-actions {
+  margin-top: 0.75rem;
+}
+
+.banner-hint {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
